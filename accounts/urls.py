@@ -7,6 +7,7 @@ from .views import (
     PasswordChangeView,
     PasswordResetView,
     UserLoginAPIView,
+    UserProfileAPIView,
     UserRegisterationAPIView,
 )
 
@@ -17,6 +18,7 @@ router = DefaultRouter()
 urlpatterns = [
     path('register/', UserRegisterationAPIView.as_view(), name='user_register'),
     path('login/', UserLoginAPIView.as_view(), name='user_login'),
+    path('profile/', UserProfileAPIView.as_view(), name='user_profile'),
     path('password/change/', PasswordChangeView.as_view(), name='password_change'),
     path('forget_password/', ForgetPasswordView.as_view(), name='forget_password'),
     path('reset_password/', PasswordResetView.as_view(), name='reset_password'),

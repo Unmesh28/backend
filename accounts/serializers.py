@@ -1,3 +1,4 @@
+from pyexpat import model
 import phonenumbers
 from datetime import timedelta
 from django.utils.translation import gettext as _
@@ -63,7 +64,8 @@ class UserRegistrationSerializer(serializers.Serializer):
                 if not phonenumbers.is_valid_number(z):
                     raise serializers.ValidationError(
                         _("user_id': 'This is not a valid User ID. Please verify and enter again."))
-            except:
+            except Exception as e:
+                print(e)
                 raise serializers.ValidationError(
                         _("user_id': 'This is not a valid User ID. Please verify and enter again."))
 
@@ -147,6 +149,17 @@ class UserLoginSerializer(serializers.Serializer):
 
         validated_data['user'] = user
         return validated_data
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer to profile update of an existing users with first name and last name.
+    """
+    user_id = serializers.CharField(source='username', read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'user_id')
 
 
 class PasswordChangeSerializer(serializers.Serializer):

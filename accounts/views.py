@@ -1,19 +1,22 @@
 from django.utils import timezone
 from typing import Dict
 from django.utils.translation import gettext as _
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
+from rest_framework import mixins, viewsets
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import permissions, status
 from rest_framework.views import APIView
 
-from accounts.models import User 
+from accounts.models import User
+from accounts.permissions import IsUserProfileOwner 
 from accounts.serializers import (
     ForgetPasswordSerializer,
     LogoutSerializer,
     PasswordChangeSerializer,
     PasswordResetSerializer,
     UserLoginSerializer,
+    UserProfileSerializer,
     UserRegistrationSerializer
 )
 
@@ -64,6 +67,18 @@ class UserLoginAPIView(GenericAPIView):
             "token": get_tokens_for_user(user)
             }, status=status.HTTP_200_OK)
 
+
+class UserProfileAPIView(RetrieveUpdateAPIView):
+    """
+    Get, Update user profile
+    """
+    queryset = User.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = (IsUserProfileOwner,)
+
+    def get_object(self):
+        return self.request.user
+        
 
 class PasswordChangeView(GenericAPIView):
     """
