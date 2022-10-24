@@ -70,7 +70,10 @@ class UserLoginAPIView(GenericAPIView):
 
 class UserProfileAPIView(RetrieveUpdateAPIView):
     """
-    Get, Update user profile
+    Update first name and last name.
+
+    Accepts the following POST parameters: first name, last name
+    Returns the success/fail message.
     """
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
