@@ -1,18 +1,32 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext as _
 from django.conf import settings
+from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django.contrib.auth.models import AbstractUser
+
+from accounts.managers import CustomUserManager
 
 
-# Extended User Class
-class User(AbstractUser):
-    email = None
+class User(AbstractBaseUser, PermissionsMixin):
+    username = models.CharField(max_length=200, unique=True)
+    first_name = models.CharField(max_length=200, blank=True, null=True)
+    last_name = models.CharField(max_length=200, blank=True, null=True)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+    
     otp = models.CharField(max_length=120, null=True, blank=True)
     otp_expired_at = models.DateTimeField(null=True, blank=True)
     password_expired_at = models.DateTimeField(null=True)
 
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
+
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return self.username
 
     def generate_security_code(self):
         """
@@ -21,23 +35,3 @@ class User(AbstractUser):
         """
         token_length = getattr(settings, "TOKEN_LENGTH", 6)
         return get_random_string(int(token_length), allowed_chars="0123456789")
-
-    # def is_security_code_expired(self):
-    #     expiration_date = self.sent + datetime.timedelta(
-    #         minutes=settings.TOKEN_EXPIRE_MINUTES
-    #     )
-    #     return expiration_date <= timezone.now()
-
-    # def check_verification(self, security_code):
-    #     if (
-    #         not self.is_security_code_expired() and
-    #         security_code == self.security_code and
-    #         self.is_verified == False
-    #     ):
-    #         self.is_verified = True
-    #         self.save()
-    #     else:
-    #         raise NotAcceptable(
-    #             _("Your security code is wrong, expired or this phone is verified before."))
-
-    #     return self.is_verified
