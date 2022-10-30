@@ -121,8 +121,8 @@ class UserLoginSerializer(serializers.Serializer):
     """
     Serializer to login users with user id and password.
     """
-    user_id = serializers.CharField()
-    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    user_id = serializers.CharField(required=False)
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'}, required=False)
 
     def _validate_user(self, user_id, password):
         user = None
@@ -138,6 +138,12 @@ class UserLoginSerializer(serializers.Serializer):
     def validate(self, validated_data):
         user_id = validated_data.get('user_id')
         password = validated_data.get('password')
+        
+        if not user_id:
+            raise RequiredException()
+
+        if not password:
+            raise RequiredException()
 
         user = None
 
@@ -153,6 +159,7 @@ class UserLoginSerializer(serializers.Serializer):
             raise PasswordExpiredException
 
         validated_data['user'] = user
+
         return validated_data
 
 
@@ -171,10 +178,10 @@ class PasswordChangeSerializer(serializers.Serializer):
     """
     Serializer to change password with user id and current password.
     """
-    user_id = serializers.CharField()
-    current_password = serializers.CharField(write_only=True, style={'input_type': 'password'})
-    new_password = serializers.CharField(write_only=True, style={'input_type': 'password'})
-    verify_password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    user_id = serializers.CharField(required=False)
+    current_password = serializers.CharField(write_only=True, style={'input_type': 'password'}, required=False)
+    new_password = serializers.CharField(write_only=True, style={'input_type': 'password'}, required=False)
+    verify_password = serializers.CharField(write_only=True, style={'input_type': 'password'}, required=False)
 
     def _validate_user(self, user_id, password):
         user = None
@@ -206,6 +213,19 @@ class PasswordChangeSerializer(serializers.Serializer):
         user_id = validated_data.get('user_id')
         current_password = validated_data.get('current_password')
         new_password = validated_data.get('new_password')
+        verify_password = validated_data.get('verify_password')
+
+        if not user_id:
+            raise RequiredException()
+
+        if not current_password:
+            raise RequiredException()
+
+        if not new_password:
+            raise RequiredException()
+
+        if not verify_password:
+            raise RequiredException()
 
         user = None
 
@@ -251,7 +271,7 @@ class ForgetPasswordSerializer(serializers.Serializer):
     """
     Serializer for requesting a password reset email/sms.
     """
-    user_id = serializers.CharField()
+    user_id = serializers.CharField(required=False)
 
     def _validate_user(self, user_id):
         user = None
@@ -269,6 +289,10 @@ class ForgetPasswordSerializer(serializers.Serializer):
 
     def validate(self, validated_data):
         user_id = validated_data.get('user_id')
+
+        if not user_id:
+            raise RequiredException()
+
         user = None
         user = self._validate_user(user_id)
 
@@ -294,10 +318,10 @@ class PasswordResetSerializer(serializers.Serializer):
     """
     Serializer to reset password with user id, otp, password and verify password.
     """
-    user_id = serializers.CharField()
-    otp = serializers.CharField()
-    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
-    verify_password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    user_id = serializers.CharField(required=False)
+    otp = serializers.CharField(required=False)
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'}, required=False)
+    verify_password = serializers.CharField(write_only=True, style={'input_type': 'password'}, required=False)
 
     def _validate_otp(self, user_id, otp):
         user = None
@@ -320,6 +344,19 @@ class PasswordResetSerializer(serializers.Serializer):
         user_id = validated_data.get('user_id')
         otp = validated_data.get('otp')
         password = validated_data.get('password')
+        verify_password = validated_data.get('verify_password')
+
+        if not user_id:
+            raise RequiredException()
+
+        if not otp:
+            raise RequiredException()
+
+        if not password:
+            raise RequiredException()
+
+        if not verify_password:
+            raise RequiredException()
 
         user = None
 

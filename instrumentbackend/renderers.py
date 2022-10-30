@@ -9,9 +9,15 @@ class CustomRenderer(JSONRenderer):
         response = {
           "status": True,
           "code": status_code,
-          "data": data,
+          "data": None,
           "message": "Data available"
         }
+
+        try:
+            response["message"] = data["detail"]
+        except:
+            response["message"] = "Data available"
+            response["data"] = data
 
         if not str(status_code).startswith('2'):
             response["status"] = False
