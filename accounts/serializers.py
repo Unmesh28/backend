@@ -62,18 +62,14 @@ class UserRegistrationSerializer(serializers.Serializer):
             try:
                 z = phonenumbers.parse(user_id, None)
                 if not phonenumbers.is_valid_number(z):
-                    raise serializers.ValidationError(
-                        _("user_id': 'This is not a valid User ID. Please verify and enter again."))
+                    raise serializers.ValidationError({"user_id": "This is not a valid User ID. Please verify and enter again."})
             except Exception as e:
-                print(e)
-                raise serializers.ValidationError(
-                        _("user_id': 'This is not a valid User ID. Please verify and enter again."))
+                raise serializers.ValidationError({"user_id": "This is not a valid User ID. Please verify and enter again."})
 
         # Unique validation
         user = User.objects.filter(username__iexact=user_id).exists()
         if user:
-            raise serializers.ValidationError(
-                _("This User ID already exists. Please enter a new User ID."))
+            raise serializers.ValidationError({"user_id": "This User ID already exists. Please enter a new User ID."})
 
         return user_id
 
