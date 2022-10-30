@@ -14,6 +14,24 @@ class AccountDisabledException(APIException):
     default_code = 'account-disabled'
 
 
+class RequiredException(APIException):
+    status_code = 400
+    default_detail = _('Required fields are empty.')
+    default_code = 'required-field'
+
+
+class InvalidUserIdException(APIException):
+    status_code = 400
+    default_detail = _('This is not a valid User ID. Please verify and enter again.')
+    default_code = 'invalid-user-id'
+
+
+class ExistUserException(APIException):
+    status_code = 400
+    default_detail = _('This User ID already exists. Please enter a new User ID.')
+    default_code = 'exist-user-id'
+
+
 class InvalidCredentialsException(APIException):
     status_code = 401
     default_detail = _('Wrong user id or password.')

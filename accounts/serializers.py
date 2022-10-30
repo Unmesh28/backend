@@ -12,10 +12,13 @@ from rest_framework import serializers
 from accounts.exceptions import (
     AccountDisabledException,
     AccountNotRegisteredException,
+    ExistUserException,
     IncorrectOTPException, 
     InvalidCredentialsException,
+    InvalidUserIdException,
     OtpExpiredException, 
-    PasswordExpiredException
+    PasswordExpiredException,
+    RequiredException
 )
 
 from accounts.models import User
@@ -24,7 +27,6 @@ from accounts.notifications import (
     otp_notification, 
     welcome_notification
 )
-
 
 
 def validate_password(user, password):
@@ -47,9 +49,9 @@ class UserRegistrationSerializer(serializers.Serializer):
     Serializer for registrating new users using userid.
     User id can be email or phone number.
     """
-    user_id = serializers.CharField(source='username')
-    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
-    verify_password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    user_id = serializers.CharField(source='username', required=False)
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'}, required=False)
+    verify_password = serializers.CharField(write_only=True, style={'input_type': 'password'}, required=False)
 
     def _validate_user(self, user_id):
 
@@ -62,23 +64,30 @@ class UserRegistrationSerializer(serializers.Serializer):
             try:
                 z = phonenumbers.parse(user_id, None)
                 if not phonenumbers.is_valid_number(z):
-                    raise serializers.ValidationError({"user_id": "This is not a valid User ID. Please verify and enter again."})
+                    raise InvalidUserIdException()
             except Exception as e:
-                raise serializers.ValidationError({"user_id": "This is not a valid User ID. Please verify and enter again."})
+                raise InvalidUserIdException()
 
         # Unique validation
         user = User.objects.filter(username__iexact=user_id).exists()
         if user:
-            raise serializers.ValidationError({"user_id": "This User ID already exists. Please enter a new User ID."})
+            raise ExistUserException()
 
         return user_id
 
     def validate(self, validated_data):
         user_id = validated_data.get('username', None)
         password = validated_data.get('password', None)
+        verify_password = validated_data.get('verify_password', None)
 
         if not user_id:
-            raise serializers.ValidationError({'user_id': 'Enter an email or a phone number.'})
+            raise RequiredException()
+
+        if not password:
+            raise RequiredException()
+
+        if not verify_password:
+            raise RequiredException()
 
         # validate user id
         self._validate_user(user_id)
