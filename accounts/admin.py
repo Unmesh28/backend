@@ -13,14 +13,14 @@ class UserAdmin(UserAdmin):
     list_filter = ('username', 'is_staff', 'is_active',)
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        (None, {'fields': ('first_name', 'last_name', 'date_joined')}),
+        (None, {'fields': ('name', 'date_joined')}),
         (None, {'fields': ('otp', 'otp_expired_at', 'password_expired_at')}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('first_name', 'last_name', 'username', 'password1', 'password2', 'is_staff', 'is_active')}
+            'fields': ('name', 'username', 'password1', 'password2', 'is_staff', 'is_active')}
         ),
     )
     search_fields = ('username',)

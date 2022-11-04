@@ -171,7 +171,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'user_id')
+        fields = ('name', 'user_id')
 
 
 class PasswordChangeSerializer(serializers.Serializer):

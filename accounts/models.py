@@ -10,8 +10,7 @@ from accounts.managers import CustomUserManager
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=200, unique=True)
-    first_name = models.CharField(max_length=200, blank=True, null=True)
-    last_name = models.CharField(max_length=200, blank=True, null=True)
+    name = models.CharField(max_length=200, blank=True, null=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
